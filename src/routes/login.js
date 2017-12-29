@@ -6,14 +6,12 @@ import { Link } from "react-router-dom"
 import { graphql } from "react-apollo"
 import gql from "graphql-tag"
 
-class Register extends React.Component {
+class Login extends React.Component {
   constructor(props) {
     super(props)
     extendObservable(this, {
-      username: "",
       email: "",
       password: "",
-      usernameError: false,
       passwordError: false,
       emailError: false,
       errorList: []
@@ -22,15 +20,17 @@ class Register extends React.Component {
 
   onSubmit = async e => {
     this.errorList = []
-    const { username, email, password } = this
+    const { email, password } = this
     const response = await this.props.mutate({
-      variables: { username, email, password }
+      variables: { email, password }
     })
 
-    const { ok, errors } = response.data.register
+    const { ok, errors, token, refreshToken } = response.data.login
 
     if (ok) {
-      this.props.history.push("/login")
+      localStorage.setItem("token", token)
+      localStorage.setItem("refreshToken", refreshToken)
+      this.props.history.push("/")
     } else {
       errors.forEach(({ path, message }) => {
         this[`${path}Error`] = true
@@ -44,31 +44,20 @@ class Register extends React.Component {
   }
 
   render() {
-    document.title = "Register"
+    document.title = "Login"
     return (
       <Container style={{ width: "50vw", paddingTop: "10vh" }}>
-        <Message
-          attached
-          header="Register to our site"
-          content="Fill out the form below to sign-up for a new account"
-        />
+        <Message attached header="Login" />
         <Form className="attached fluid segment">
           <Form.Input
             name="email"
             label="Email"
+            type="email"
             placeholder="Email.."
-            type="text"
             error={!!this.emailError}
             onChange={this.onChange}
           />
-          <Form.Input
-            name="username"
-            label="Username"
-            placeholder="Username"
-            type="text"
-            error={!!this.usernameError}
-            onChange={this.onChange}
-          />
+
           <Form.Input
             name="password"
             placeholder="Password"
@@ -79,7 +68,7 @@ class Register extends React.Component {
           />
           <div style={{ textAlign: "center" }}>
             <Form.Button onClick={this.onSubmit} color="blue">
-              Register
+              Login
             </Form.Button>
           </div>
         </Form>
@@ -93,17 +82,19 @@ class Register extends React.Component {
           </Message>
         )}
         <Message warning>
-          Already signed up? <Link to="/login">Login here</Link> instead.
+          New on this site? <Link to="/register">Register here</Link> instead.
         </Message>
       </Container>
     )
   }
 }
 
-const registerMutation = gql`
-  mutation($username: String!, $email: String!, $password: String!) {
-    register(username: $username, email: $email, password: $password) {
+const loginMutation = gql`
+  mutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
       ok
+      token
+      refreshToken
       errors {
         message
         path
@@ -112,4 +103,4 @@ const registerMutation = gql`
   }
 `
 
-export default graphql(registerMutation)(observer(Register))
+export default graphql(loginMutation)(observer(Login))
