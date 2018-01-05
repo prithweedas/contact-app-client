@@ -1,44 +1,77 @@
-import React from "react"
-import { Header, Card } from "semantic-ui-react"
+import React, { Component } from "react"
+import { Header } from "semantic-ui-react"
 import gql from "graphql-tag"
 import { graphql } from "react-apollo"
 
 import CreateContact from "../components/CreateContact"
 import HomeContainer from "../containers/HomeContainer"
 import ContactContainer from "../containers/ContactContainer"
-import ContactListContainer from "../containers/ContactsListContainer"
 import Contact from "../components/Contact"
+import ContactGroup from "../components/ContactGroup"
 
-const Home = ({ data: { loading, getAllContacts } }) => {
-  document.title = "Home"
-  return (
-    <HomeContainer>
-      <ContactContainer>
-        <CreateContact />
-      </ContactContainer>
-      <div
-        style={{
-          overflowY: "auto",
-          gridColumn: "2",
-          gridRow: "1",
-          padding: "3%"
-        }}
-      >
-        <Card.Group>
+const newContactSubscription = gql`
+  subscription($owner: Int!) {
+    contactAdded(owner: $owner) {
+      id
+      name
+      phone
+      email
+    }
+  }
+`
+
+class Home extends Component {
+  componentWillMount() {
+    const { userId } = this.props
+    console.log(userId)
+
+    this.props.data.subscribeToMore({
+      document: newContactSubscription,
+      variables: {
+        owner: userId
+      },
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData) {
+          return prev
+        }
+        console.log(subscriptionData.data.contactAdded)
+        return {
+          ...prev,
+          getAllContacts: [
+            ...prev.getAllContacts,
+            subscriptionData.data.contactAdded
+          ]
+        }
+      }
+    })
+  }
+  render() {
+    document.title = "Home"
+    const { data: { loading, getAllContacts } } = this.props
+    if (!loading) console.log(getAllContacts)
+
+    return (
+      <HomeContainer>
+        <ContactContainer>
+          <CreateContact />
+        </ContactContainer>
+        <div
+          style={{
+            overflowY: "auto",
+            gridColumn: "2",
+            gridRow: "1",
+            padding: "3%",
+            marginTop: "5%"
+          }}
+        >
           {!loading &&
-            getAllContacts.length > 0 &&
-            getAllContacts.map(contact => (
-              <Contact
-                key={`contact-${contact.id}`}
-                name={contact.name}
-                email={contact.email}
-                phone={contact.phone}
-              />
-            ))}
-        </Card.Group>
-      </div>
-    </HomeContainer>
-  )
+            getAllContacts.length > 0 && (
+              <ContactGroup contacts={getAllContacts} />
+            )}
+        </div>
+      </HomeContainer>
+    )
+  }
 }
 
 const getContactsQuery = gql`

@@ -8,7 +8,8 @@ const PrivateRoute = ({ data, component: Component, ...rest }) =>
     <Route
       {...rest}
       render={props => {
-        if (data.isAuthenticated) return <Component {...props} />
+        if (data.isAuthenticated.auth)
+          return <Component userId={data.isAuthenticated.userId} {...props} />
         else
           return (
             <Redirect
@@ -23,7 +24,10 @@ const PrivateRoute = ({ data, component: Component, ...rest }) =>
 
 const auth = gql`
   query {
-    isAuthenticated
+    isAuthenticated {
+      auth
+      userId
+    }
   }
 `
 

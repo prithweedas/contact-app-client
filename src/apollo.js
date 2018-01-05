@@ -2,9 +2,18 @@ import { ApolloClient } from "apollo-client"
 import { createHttpLink } from "apollo-link-http"
 import { InMemoryCache } from "apollo-cache-inmemory"
 import { setContext } from "apollo-link-context"
-import { ApolloLink } from "apollo-link"
+import { ApolloLink, split } from "apollo-link"
+import { WebSocketLink } from "apollo-link-ws"
+import { getMainDefinition } from "apollo-utilities"
 
 const httpLink = createHttpLink({ uri: "http://localhost:3001/graphql" })
+
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:3001/subscriptions`,
+  options: {
+    reconnect: true
+  }
+})
 
 const middlewareLink = setContext(() => ({
   headers: {
@@ -34,7 +43,17 @@ const afterwareLink = new ApolloLink((operation, forward) => {
   })
 })
 
-const link = afterwareLink.concat(middlewareLink.concat(httpLink))
+const linkWithMiddleWare = afterwareLink.concat(middlewareLink.concat(httpLink))
+
+const link = split(
+  // split based on operation type
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query)
+    return kind === "OperationDefinition" && operation === "subscription"
+  },
+  wsLink,
+  linkWithMiddleWare
+)
 
 const client = new ApolloClient({
   link,
@@ -42,3 +61,6 @@ const client = new ApolloClient({
 })
 
 export default client
+
+// using the ability to split links, you can send data to each link
+// depending on what kind of operation is being sent
