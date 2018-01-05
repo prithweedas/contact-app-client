@@ -53,6 +53,7 @@ class Login extends React.Component {
             name="email"
             label="Email"
             type="email"
+            value={this.email}
             placeholder="Email.."
             error={!!this.emailError}
             onChange={this.onChange}
@@ -63,6 +64,7 @@ class Login extends React.Component {
             placeholder="Password"
             label="Password"
             type="password"
+            value={this.password}
             error={!!this.passwordError}
             onChange={this.onChange}
           />

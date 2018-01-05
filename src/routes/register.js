@@ -58,6 +58,7 @@ class Register extends React.Component {
             label="Email"
             placeholder="Email.."
             type="text"
+            value={this.email}
             error={!!this.emailError}
             onChange={this.onChange}
           />
@@ -66,6 +67,7 @@ class Register extends React.Component {
             label="Username"
             placeholder="Username"
             type="text"
+            value={this.username}
             error={!!this.usernameError}
             onChange={this.onChange}
           />
@@ -74,6 +76,7 @@ class Register extends React.Component {
             placeholder="Password"
             label="Password"
             type="password"
+            value={this.password}
             error={!!this.passwordError}
             onChange={this.onChange}
           />
