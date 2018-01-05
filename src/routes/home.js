@@ -1,12 +1,10 @@
 import React, { Component } from "react"
-import { Header } from "semantic-ui-react"
 import gql from "graphql-tag"
 import { graphql } from "react-apollo"
 
 import CreateContact from "../components/CreateContact"
 import HomeContainer from "../containers/HomeContainer"
 import ContactContainer from "../containers/ContactContainer"
-import Contact from "../components/Contact"
 import ContactGroup from "../components/ContactGroup"
 
 const newContactSubscription = gql`

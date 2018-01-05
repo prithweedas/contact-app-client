@@ -22,7 +22,7 @@ class CreateContact extends Component {
     const response = await this.props.mutate({
       variables: { name, email, phone }
     })
-    const { ok, errors } = response.data.createContact
+    const { ok } = response.data.createContact
     if (ok) {
       this.name = ""
       this.email = ""
