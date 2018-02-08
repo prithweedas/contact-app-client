@@ -22,6 +22,7 @@ class CreateContact extends Component {
     const response = await this.props.mutate({
       variables: { name, email, phone }
     })
+    this.props.refetch()
     const { ok } = response.data.createContact
     if (ok) {
       this.name = ""

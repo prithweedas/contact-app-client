@@ -23,25 +23,25 @@ class Home extends Component {
     const { userId } = this.props
     console.log(userId)
 
-    this.props.data.subscribeToMore({
-      document: newContactSubscription,
-      variables: {
-        owner: userId
-      },
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData) {
-          return prev
-        }
-        console.log(subscriptionData.data.contactAdded)
-        return {
-          ...prev,
-          getAllContacts: [
-            ...prev.getAllContacts,
-            subscriptionData.data.contactAdded
-          ]
-        }
-      }
-    })
+    // this.props.data.subscribeToMore({
+    //   document: newContactSubscription,
+    //   variables: {
+    //     owner: userId
+    //   },
+    //   updateQuery: (prev, { subscriptionData }) => {
+    //     if (!subscriptionData) {
+    //       return prev
+    //     }
+    //     console.log(subscriptionData.data.contactAdded)
+    //     return {
+    //       ...prev,
+    //       getAllContacts: [
+    //         ...prev.getAllContacts,
+    //         subscriptionData.data.contactAdded
+    //       ]
+    //     }
+    //   }
+    // })
   }
   render() {
     document.title = "Home"
@@ -51,7 +51,7 @@ class Home extends Component {
     return (
       <HomeContainer>
         <ContactContainer>
-          <CreateContact />
+          <CreateContact refetch={this.props.data.refetch} />
         </ContactContainer>
         <div
           style={{

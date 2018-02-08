@@ -11,7 +11,7 @@ const httpLink = createHttpLink({
 })
 
 const wsLink = new WebSocketLink({
-  uri: `ws:https://contact-app-server.azurewebsites.net/subscriptions`,
+  uri: `ws://contact-app-server.azurewebsites.net/subscriptions`,
   options: {
     reconnect: true
   }

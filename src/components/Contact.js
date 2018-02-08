@@ -8,7 +8,7 @@ const Contact = ({ name, email, phone }) => {
         <Image
           floated="right"
           size="mini"
-          src="http://localhost:3001/static/images/steve.jpg"
+          src="https://contact-app-server.azurewebsites.net/static/images/steve.jpg"
         />
         <Card.Header>{name}</Card.Header>
       </Card.Content>
